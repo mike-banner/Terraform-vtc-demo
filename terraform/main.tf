@@ -14,3 +14,5 @@ module "cloudflare_pages" {
   github_owner     = var.github_owner
   github_repo_name = var.github_repo_name
 }
+
+# Test CI
