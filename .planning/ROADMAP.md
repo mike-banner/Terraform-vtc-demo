@@ -5,7 +5,7 @@
 | Phase | Plan | Status | Summary |
 |-------|------|--------|---------|
 | 01 - Terraform Foundation & Workspaces | 1/1 | Complete   | 2026-06-25 |
-| 02 - Pipeline CI/CD & GitOps | 1 plan | PLANNED | - |
+| 02 - Pipeline CI/CD & GitOps | 1/1 | Complete   | 2026-06-25 |
 | 03 - Intégration SaaS VTC | PLAN | PENDING | - |
 
 ## Phase 1: Terraform Foundation & Workspaces ✓
@@ -20,10 +20,10 @@
 
 **Goal:** Automatiser le cycle de déploiement (GitOps) via GitHub Actions pour retirer toute intervention manuelle et garantir des déploiements sûrs.
 
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 02-01-PLAN.md — Workflows plan.yml (PR) + apply.yml (merge) + doc secrets/prérequis
+- [x] 02-01-PLAN.md — Workflows plan.yml (PR) + apply.yml (merge) + doc secrets/prérequis
 
 - Création du workflow de Pull Request (`plan.yml`).
 - Création du workflow de Merge (`apply.yml`).
