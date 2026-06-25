@@ -4,7 +4,7 @@
 
 | Phase | Plan | Status | Summary |
 |-------|------|--------|---------|
-| 01 - Terraform Foundation & Workspaces | PLAN | COMPLETE | [01-PLAN-SUMMARY.md](phases/01/01-PLAN-SUMMARY.md) |
+| 01 - Terraform Foundation & Workspaces | 1/1 | Complete   | 2026-06-25 |
 | 02 - Pipeline CI/CD & GitOps | PLAN | PENDING | - |
 | 03 - Intégration SaaS VTC | PLAN | PENDING | - |
 
