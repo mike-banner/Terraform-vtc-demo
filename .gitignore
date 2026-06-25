@@ -17,6 +17,14 @@ pnpm-debug.log*
 .env
 .env.production
 
+# Terraform — secrets et state local
+terraform/.terraform/
+terraform/*.tfvars
+terraform/*.tfvars.json
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+
 # macOS-specific files
 .DS_Store
 
