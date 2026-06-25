@@ -1,0 +1,60 @@
+# Workflow Terraform Apply — déclenché sur push (merge) vers main ou staging.
+# But : appliquer automatiquement le plan Terraform après merge d'une PR.
+# Filtré par paths: ['terraform/**'] pour éviter les apply inutiles sur
+# des modifications de docs ou de CI uniquement.
+
+name: Terraform Apply
+
+on:
+  push:
+    branches: [main, staging]
+    paths:
+      - 'terraform/**'
+
+# Pas de commentaire PR dans ce workflow — write sur les issues est inutile.
+# Limiter les permissions au strict nécessaire.
+permissions:
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+
+    env:
+      # Sélection dynamique du workspace selon la branche poussée.
+      # IMPORTANT : utiliser github.ref_name ici (branche du push).
+      # La variable base_ref n'est disponible que dans le contexte pull_request.
+      TF_WORKSPACE: ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'staging' && 'staging' || 'dev' }}
+
+      # Variables Terraform injectées via TF_VAR_* depuis GitHub Secrets.
+      # Cohérent avec plan.yml — même mapping de secrets, même jeu de variables.
+      TF_VAR_cloudflare_api_token: ${{ secrets.CF_API_TOKEN }}
+      TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+      TF_VAR_github_owner: ${{ secrets.GH_OWNER }}
+      TF_VAR_github_repo_name: ${{ secrets.GH_REPO_NAME }}
+
+      # Credentials S3 pour le backend Cloudflare R2 (API S3-compatible).
+      AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CF_R2_SECRET_ACCESS_KEY }}
+
+    steps:
+      # Checkout de la branche mergée (HEAD du push)
+      - uses: actions/checkout@v4
+
+      # Installation du CLI Terraform
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "~> 1.5"
+
+      # Init avec injection de l'endpoint R2 via -backend-config.
+      # TF_WORKSPACE est défini avant cet init, Terraform le lit automatiquement.
+      - name: Terraform Init
+        run: terraform init -input=false -backend-config="endpoint=${{ secrets.CF_R2_ENDPOINT }}"
+        working-directory: terraform
+
+      # Apply automatique sans confirmation interactive.
+      # -auto-approve est safe ici car le trigger est un merge vers une branche protégée
+      # (main ou staging) — la PR a été reviewée et le plan a été commenté avant merge.
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+        working-directory: terraform
