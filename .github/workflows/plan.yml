@@ -1,0 +1,112 @@
+# Workflow Terraform Plan — déclenché sur Pull Request
+# But : exécuter fmt/validate/plan et poster le résultat en commentaire de PR.
+# Déclenché uniquement sur les PRs ciblant main ou staging, et si des fichiers
+# sous terraform/ ont changé (évite les runs inutiles sur doc/CI uniquement).
+
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [main, staging]
+    paths:
+      - 'terraform/**'
+
+# pull-requests:write est requis pour que github-script puisse poster le commentaire.
+# Sans cette permission, le step échoue avec "Resource not accessible by integration".
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+
+    env:
+      # Sélection dynamique du workspace selon la branche cible de la PR.
+      # github.base_ref = branche cible (ex: main → production, staging → staging).
+      # La valeur de repli "dev" ne sera jamais atteinte (triggers limités à main/staging).
+      TF_WORKSPACE: ${{ github.base_ref == 'main' && 'production' || github.base_ref == 'staging' && 'staging' || 'dev' }}
+
+      # Variables Terraform injectées via TF_VAR_* (convention officielle Terraform).
+      # Aucun credential n'est hardcodé ; tout vient des GitHub Secrets.
+      TF_VAR_cloudflare_api_token: ${{ secrets.CF_API_TOKEN }}
+      TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+      TF_VAR_github_owner: ${{ secrets.GH_OWNER }}
+      TF_VAR_github_repo_name: ${{ secrets.GH_REPO_NAME }}
+
+      # Credentials S3 pour le backend Cloudflare R2 (API S3-compatible).
+      AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CF_R2_SECRET_ACCESS_KEY }}
+
+    steps:
+      # Checkout du code source de la PR
+      - uses: actions/checkout@v4
+
+      # Installation du CLI Terraform avec le wrapper stdout activé par défaut.
+      # Le wrapper expose steps.<id>.outputs.stdout pour capturer la sortie du plan.
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "~> 1.5"
+
+      # Vérification du formatage. continue-on-error:true permet au job de continuer
+      # et de poster le statut fmt dans le commentaire PR même si le check échoue.
+      - name: Terraform Format Check
+        id: fmt
+        run: terraform fmt -check -recursive
+        working-directory: terraform
+        continue-on-error: true
+
+      # Init avec injection de l'endpoint R2 via -backend-config.
+      # L'endpoint est absent de backend.tf par design — il varie par compte Cloudflare.
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false -backend-config="endpoint=${{ secrets.CF_R2_ENDPOINT }}"
+        working-directory: terraform
+
+      # Validation de la syntaxe et de la cohérence de la configuration Terraform.
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: terraform
+
+      # Plan avec continue-on-error:true pour que le step de commentaire s'exécute
+      # même en cas d'échec. L'échec est propagé par le step "Fail if plan failed" ci-dessous.
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -input=false
+        working-directory: terraform
+        continue-on-error: true
+
+      # Commentaire PR avec le statut de chaque étape et le détail du plan.
+      - name: Post Plan to PR
+        uses: actions/github-script@v7
+        env:
+          PLAN: ${{ steps.plan.outputs.stdout }}
+        with:
+          script: |
+            const fmt      = '${{ steps.fmt.outcome }}'      === 'failure' ? '⚠️ fmt check failed' : '✅ fmt ok';
+            const validate = '${{ steps.validate.outcome }}' === 'failure' ? '❌ validate failed'  : '✅ validate ok';
+            const plan     = '${{ steps.plan.outcome }}'     === 'failure' ? '❌ Plan failed'       : '✅ Plan ok';
+            const output = [
+              `#### Workspace: \`${{ env.TF_WORKSPACE }}\``,
+              `#### Format ${fmt} | Validate ${validate} | Plan ${plan}`,
+              '<details><summary>Show Plan</summary>',
+              '',
+              '```terraform',
+              process.env.PLAN,
+              '```',
+              '</details>'
+            ].join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              body:         output
+            });
+
+      # Propagation explicite de l'échec du plan (piège 3).
+      # Sans ce step, le job se terminerait en succès malgré un plan en erreur,
+      # rendant la PR verte à tort.
+      - name: Fail if plan failed
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
