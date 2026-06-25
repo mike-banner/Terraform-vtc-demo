@@ -23,7 +23,7 @@ terraform/*.tfvars
 terraform/*.tfvars.json
 terraform/*.tfstate
 terraform/*.tfstate.backup
-terraform/.terraform.lock.hcl
+# .terraform.lock.hcl est volontairement tracké (pin des versions providers)
 
 # macOS-specific files
 .DS_Store

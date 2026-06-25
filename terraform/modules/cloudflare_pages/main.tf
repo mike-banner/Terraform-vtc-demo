@@ -9,6 +9,14 @@
 # via le module racine. Le nom du projet est différencié par workspace pour
 # éviter les collisions dans l'interface Cloudflare.
 
+terraform {
+  required_providers {
+    cloudflare = {
+      source = "cloudflare/cloudflare"
+    }
+  }
+}
+
 resource "cloudflare_pages_project" "this" {
   account_id        = var.account_id
   name              = var.project_name
@@ -16,15 +24,14 @@ resource "cloudflare_pages_project" "this" {
 
   # Connexion au dépôt GitHub source via l'intégration native Cloudflare Pages.
   # Cloudflare déclenche un build automatique à chaque push sur la branche configurée.
-  source {
+  source = {
     type = "github"
-    config {
+    config = {
       owner                         = var.github_owner
       repo_name                     = var.github_repo_name
       production_branch             = var.production_branch
       pr_comments_enabled           = true
-      deployments_enabled           = true
-      production_deployment_enabled = true
+      production_deployments_enabled = true
 
       # Prévisualisation activée sur toutes les branches hors production
       preview_deployment_setting = "custom"
@@ -33,7 +40,7 @@ resource "cloudflare_pages_project" "this" {
   }
 
   # Configuration du build Astro/Nuxt (commande et répertoire de sortie)
-  build_config {
+  build_config = {
     build_command   = "npm run build"
     destination_dir = "dist"
     root_dir        = ""
@@ -46,5 +53,5 @@ resource "cloudflare_pages_domain" "custom" {
   count      = var.custom_domain != "" ? 1 : 0
   account_id = var.account_id
   project_name = cloudflare_pages_project.this.name
-  domain     = var.custom_domain
+  name       = var.custom_domain
 }
