@@ -14,15 +14,9 @@ variable "organization_id" {
 }
 
 variable "database_password" {
-  description = "Mot de passe administrateur PostgreSQL du projet (pas de @, :, /, ?, # — doivent être encodés URI)"
+  description = "Mot de passe administrateur PostgreSQL du projet"
   type        = string
   sensitive   = true
-
-  validation {
-    # ponytail: rejette les chars qui briseraient l'URL postgresql://user:pass@host/db
-    condition     = !can(regex("[@:/?#\\[\\]@!$&'()*+,;=%]", var.database_password))
-    error_message = "Le mot de passe ne doit pas contenir de caractères spéciaux URL (@, :, /, ?, #, [, ], !, $, &, ', (, ), *, +, ,, ;, =, %). Utiliser des lettres, chiffres, - et _ uniquement."
-  }
 }
 
 variable "region" {
