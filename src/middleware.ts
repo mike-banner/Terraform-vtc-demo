@@ -10,6 +10,17 @@ export const onRequest = defineMiddleware(async ({ cookies, request, redirect, l
   const supabaseUrl = runtimeEnv.PUBLIC_SUPABASE_URL ?? import.meta.env.PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = runtimeEnv.PUBLIC_SUPABASE_ANON_KEY ?? import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return new Response(
+      `[DEBUG] Missing Supabase credentials. \n` +
+      `URL is set: ${!!supabaseUrl}\n` +
+      `Anon Key is set: ${!!supabaseAnonKey}\n` +
+      `Keys available in runtimeEnv: ${Object.keys(runtimeEnv).join(', ')}\n` +
+      `Has runtime object: ${!!(locals as any)?.runtime}`, 
+      { status: 500 }
+    );
+  }
+
   // Initialisation Supabase (SSR)
   const supabase = createServerClient(
     supabaseUrl,
