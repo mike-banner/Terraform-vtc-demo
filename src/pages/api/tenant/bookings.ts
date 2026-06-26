@@ -4,32 +4,14 @@ import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ request, locals, cookies }) => {
   try {
-    const { user, profile } = locals as any;
+    const { user, profile, supabase } = locals as any;
 
     // 🛡️ Securité de base : Authentification requise
-    if (!user || !profile) {
+    if (!user || !profile || !supabase) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
       });
     }
-
-    const supabase = createServerClient(
-      import.meta.env.PUBLIC_SUPABASE_URL,
-      import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
-      {
-        cookies: {
-          getAll: () =>
-            parseCookieHeader(request.headers.get("Cookie") ?? "").map((c) => ({
-              name: c.name,
-              value: c.value ?? "",
-            })),
-          setAll: (cookiesToSet) =>
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookies.set(name, value, options),
-            ),
-        },
-      },
-    );
 
     // 🎯 Filtrage par Tenant (Isolation multi-entreprise)
     let query = supabase

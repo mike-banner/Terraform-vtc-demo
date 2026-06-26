@@ -5,9 +5,12 @@ export function createAdminClient(locals?: App.Locals | Record<string, unknown>)
   const key =
     runtime?.SUPABASE_SERVICE_ROLE_KEY ??
     import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url =
+    runtime?.PUBLIC_SUPABASE_URL ??
+    import.meta.env.PUBLIC_SUPABASE_URL;
 
   return createClient(
-    import.meta.env.PUBLIC_SUPABASE_URL,
+    url,
     key,
   );
 }
