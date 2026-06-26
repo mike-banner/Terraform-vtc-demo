@@ -45,6 +45,22 @@ resource "cloudflare_pages_project" "this" {
     destination_dir = "dist"
     root_dir        = ""
   }
+
+  # Variables d'environnement injectées dans les déploiements production et preview.
+  # Utilisées pour passer DATABASE_URL (Supabase) sans fuiter en clair dans le code.
+  # ponytail: deployment_configs omis si env_vars vide, évite un bloc inutile en baseline
+  deployment_configs = length(var.env_vars) > 0 ? {
+    production = {
+      environment_variables = {
+        for k, v in var.env_vars : k => { value = v, type = "secret_text" }
+      }
+    }
+    preview = {
+      environment_variables = {
+        for k, v in var.env_vars : k => { value = v, type = "secret_text" }
+      }
+    }
+  } : null
 }
 
 # Domaine personnalisé — créé uniquement si var.custom_domain est renseigné.
