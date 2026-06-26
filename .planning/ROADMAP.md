@@ -6,7 +6,7 @@
 |-------|------|--------|---------|
 | 01 - Terraform Foundation & Workspaces | 1/1 | Complete   | 2026-06-25 |
 | 02 - Pipeline CI/CD & GitOps | 1/1 | Complete   | 2026-06-26 |
-| 03 - Intégration SaaS VTC | PLAN | PENDING | - |
+| 03 - Intégration SaaS VTC | 1/1 | PLANNED | - |
 
 ## Phase 1: Terraform Foundation & Workspaces ✓
 
@@ -30,6 +30,13 @@ Plans:
 - Sécurisation du pipeline (Variables d'environnement et secrets).
 
 ## Phase 3: Intégration du SaaS VTC (Cloudflare + Supabase)
+
+**Goal:** Utiliser le socle workspace de la Phase 1 pour déployer le SaaS VTC multi-environnement : un projet Supabase par workspace dont l'URL de connexion est injectée automatiquement et de façon sécurisée dans les env_vars du projet Cloudflare Pages correspondant.
+
+**Plans:** 1 plan
+
+Plans:
+- [ ] 03-PLAN.md — Provider + module Supabase, env_vars Cloudflare (secret_text), câblage main.tf (lien magique), domain_map, secrets CI, dry-run plan
 
 - Définition du Provider Terraform Supabase.
 - Création des projets de BDD Supabase isolés par Workspace (Dev/Staging/Prod).
