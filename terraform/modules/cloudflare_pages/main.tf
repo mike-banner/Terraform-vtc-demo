@@ -54,20 +54,20 @@ resource "cloudflare_pages_project" "this" {
       compatibility_flags = ["nodejs_compat"]
       compatibility_date  = "2024-06-26"
       environment_variables = {
-        for k, v in var.env_vars : k => {
-          value = v
-          type  = startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_") ? "plain_text" : "secret_text"
-        }
+        for k, v in var.env_vars : k => v if startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_")
+      }
+      secrets = {
+        for k, v in var.env_vars : k => v if !(startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_"))
       }
     }
     preview = {
       compatibility_flags = ["nodejs_compat"]
       compatibility_date  = "2024-06-26"
       environment_variables = {
-        for k, v in var.env_vars : k => {
-          value = v
-          type  = startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_") ? "plain_text" : "secret_text"
-        }
+        for k, v in var.env_vars : k => v if startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_")
+      }
+      secrets = {
+        for k, v in var.env_vars : k => v if !(startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_"))
       }
     }
   } : null
