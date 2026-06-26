@@ -19,17 +19,19 @@ terraform {
   backend "s3" {
     # Endpoint R2 : https://<account_id>.r2.cloudflarestorage.com
     # À renseigner via -backend-config ou TF_CLI_ARGS_init en CI.
-    bucket = "vtc-tfstate"
+    bucket = "terraform-state-vtc"
     key    = "terraform.tfstate"
     region = "auto" # Cloudflare R2 utilise "auto" comme région fictive
 
     # Forcer le style de path S3 (R2 ne supporte pas le style virtual-hosted)
-    force_path_style = true
+    use_path_style = true
 
-    # Désactiver les checksums DynamoDB (non disponible sur R2)
+    # Désactiver les checks AWS spécifiques (non supportés sur R2)
     skip_credentials_validation = true
     skip_metadata_api_check     = true
     skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
     use_lockfile                = false
   }
 }

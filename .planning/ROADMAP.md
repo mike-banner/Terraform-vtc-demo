@@ -5,7 +5,7 @@
 | Phase | Plan | Status | Summary |
 |-------|------|--------|---------|
 | 01 - Terraform Foundation & Workspaces | 1/1 | Complete   | 2026-06-25 |
-| 02 - Pipeline CI/CD & GitOps | PLAN | PENDING | - |
+| 02 - Pipeline CI/CD & GitOps | 1/1 | Complete   | 2026-06-25 |
 | 03 - Intégration SaaS VTC | PLAN | PENDING | - |
 
 ## Phase 1: Terraform Foundation & Workspaces ✓
@@ -18,12 +18,22 @@
 
 ## Phase 2: Pipeline CI/CD & GitOps
 
+**Goal:** Automatiser le cycle de déploiement (GitOps) via GitHub Actions pour retirer toute intervention manuelle et garantir des déploiements sûrs.
+
+**Plans:** 1/1 plans complete
+
+Plans:
+- [x] 02-01-PLAN.md — Workflows plan.yml (PR) + apply.yml (merge) + doc secrets/prérequis
+
 - Création du workflow de Pull Request (`plan.yml`).
 - Création du workflow de Merge (`apply.yml`).
 - Sécurisation du pipeline (Variables d'environnement et secrets).
 
-## Phase 3: Intégration du SaaS VTC
+## Phase 3: Intégration du SaaS VTC (Cloudflare + Supabase)
 
-- Liaison du dépôt source de l'application VTC avec les modules Terraform.
-- Déploiement multi-environnement.
+- Définition du Provider Terraform Supabase.
+- Création des projets de BDD Supabase isolés par Workspace (Dev/Staging/Prod).
+- Liaison du dépôt source de l'application VTC avec les modules Terraform Cloudflare.
+- Injection automatique des clés API et URLs Supabase dans les variables d'environnement Cloudflare Pages.
+- Déploiement multi-environnement automatisé.
 - Validation des accès Dashboard et Backoffice.
