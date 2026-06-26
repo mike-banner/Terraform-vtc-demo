@@ -44,7 +44,19 @@ variable "supabase_organization_id" {
 }
 
 variable "supabase_database_password" {
-  description = "Mot de passe administrateur de la base PostgreSQL du projet Supabase"
+  description = "Mot de passe de la base de données PostgreSQL (géré via CI)"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_anon_key" {
+  description = "Clé anonyme Supabase (gérée via CI)"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_service_role_key" {
+  description = "Clé service role Supabase (gérée via CI)"
   type        = string
   sensitive   = true
 }

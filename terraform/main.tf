@@ -42,8 +42,8 @@ module "cloudflare_pages" {
     SUPABASE_URL                  = module.supabase_project.api_url
     NEXT_PUBLIC_SUPABASE_URL      = module.supabase_project.api_url
     PUBLIC_SUPABASE_URL           = module.supabase_project.api_url
-    NEXT_PUBLIC_SUPABASE_ANON_KEY = module.supabase_project.anon_key
-    PUBLIC_SUPABASE_ANON_KEY      = module.supabase_project.anon_key
-    SUPABASE_SERVICE_ROLE_KEY     = module.supabase_project.service_role_key
+    NEXT_PUBLIC_SUPABASE_ANON_KEY = var.supabase_anon_key
+    PUBLIC_SUPABASE_ANON_KEY      = var.supabase_anon_key
+    SUPABASE_SERVICE_ROLE_KEY     = var.supabase_service_role_key
   }
 }
