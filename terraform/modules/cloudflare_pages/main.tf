@@ -48,29 +48,28 @@ resource "cloudflare_pages_project" "this" {
 
   # Variables d'environnement injectées dans les déploiements production et preview.
   # Utilisées pour passer DATABASE_URL (Supabase) sans fuiter en clair dans le code.
-  # ponytail: deployment_configs omis si env_vars vide, évite un bloc inutile en baseline
-  deployment_configs = length(var.env_vars) > 0 ? {
+  deployment_configs = {
     production = {
       compatibility_flags = ["nodejs_compat"]
       compatibility_date  = "2024-06-26"
-      environment_variables = {
-        for k, v in var.env_vars : k => v if startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_")
-      }
-      secrets = {
-        for k, v in var.env_vars : k => v if !(startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_"))
+      env_vars = {
+        for k, v in var.env_vars : k => {
+          type  = (startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_")) ? "plain_text" : "secret_text"
+          value = v
+        }
       }
     }
     preview = {
       compatibility_flags = ["nodejs_compat"]
       compatibility_date  = "2024-06-26"
-      environment_variables = {
-        for k, v in var.env_vars : k => v if startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_")
-      }
-      secrets = {
-        for k, v in var.env_vars : k => v if !(startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_"))
+      env_vars = {
+        for k, v in var.env_vars : k => {
+          type  = (startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_")) ? "plain_text" : "secret_text"
+          value = v
+        }
       }
     }
-  } : null
+  }
 }
 
 # Domaine personnalisé — créé uniquement si var.custom_domain est renseigné.
