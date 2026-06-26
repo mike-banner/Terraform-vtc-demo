@@ -51,6 +51,8 @@ resource "cloudflare_pages_project" "this" {
   # ponytail: deployment_configs omis si env_vars vide, évite un bloc inutile en baseline
   deployment_configs = length(var.env_vars) > 0 ? {
     production = {
+      compatibility_flags = ["nodejs_compat"]
+      compatibility_date  = "2024-06-26"
       environment_variables = {
         for k, v in var.env_vars : k => {
           value = v
@@ -59,6 +61,8 @@ resource "cloudflare_pages_project" "this" {
       }
     }
     preview = {
+      compatibility_flags = ["nodejs_compat"]
+      compatibility_date  = "2024-06-26"
       environment_variables = {
         for k, v in var.env_vars : k => {
           value = v
