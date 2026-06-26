@@ -23,5 +23,6 @@ resource "supabase_project" "this" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes  = [region]
   }
 }
