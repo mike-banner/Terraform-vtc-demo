@@ -3,11 +3,10 @@ phase: 03-integration-saas-vtc
 plan: "02"
 subsystem: terraform-infrastructure
 tags: [terraform, supabase, cloudflare-pages, ci-cd, iac]
-status: checkpoint-pending
-checkpoint_task: "Task 6 — dry-run terraform plan"
+status: complete
 dependency_graph:
   requires: [03-01]
-  provides: [tfvars-non-sensibles, ci-supabase-secrets, task6-dry-run-pending]
+  provides: [tfvars-non-sensibles, ci-supabase-secrets, terraform-plan-validated]
   affects:
     - terraform/main.tf
     - terraform/variables.tf
@@ -33,14 +32,14 @@ decisions:
 metrics:
   duration: "7min"
   completed: "2026-06-26"
-  tasks_completed: 2
+  tasks_completed: 3
   tasks_total: 3
   files_modified: 5
 ---
 
-# Phase 3 Plan 02 : Cablage racine + CI — CHECKPOINT (Task 6 en attente)
+# Phase 3 Plan 02 : Cablage racine + CI
 
-tfvars non-sensibles + 3 secrets Supabase injectes dans les workflows CI ; Task 4 (cablage main.tf) validee depuis 03-01 ; dry-run `terraform plan` a valider par l'operateur.
+tfvars non-sensibles + 3 secrets Supabase injectes dans les workflows CI ; Task 4 (cablage main.tf) validee depuis 03-01 ; dry-run `terraform plan` valide par l'operateur (Plan: 3 to add, secrets masques).
 
 ## Taches Executees
 
@@ -48,7 +47,7 @@ tfvars non-sensibles + 3 secrets Supabase injectes dans les workflows CI ; Task 
 |---|-----|--------|---------------|
 | 4 | Cabler main.tf + outputs.tf racine | (03-01: `497c06e`) | `terraform/main.tf`, `terraform/outputs.tf` |
 | 5 | tfvars non-sensibles + secrets CI | `b0c784a` | `terraform/terraform.tfvars`, `variables.tf`, `plan.yml`, `apply.yml` |
-| 6 | Dry-run terraform plan | — | CHECKPOINT — validation humaine requise |
+| 6 | Dry-run terraform plan | (human-verified) | `Plan: 3 to add` — secrets masques |
 
 ## Ce qui a ete construit
 
@@ -73,9 +72,32 @@ Le worktree a ete synchronise avec `docs/03-supabase-integration` (fast-forward 
   TF_VAR_supabase_database_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
   ```
 
-### Task 6 — En attente (checkpoint:human-verify)
+### Task 6 — Dry-run terraform plan (valide par l'operateur)
 
-Le dry-run `terraform plan` requiert Terraform installe localement. Instructions dans la section Checkpoint ci-dessous.
+`terraform plan` execute localement par l'operateur avec workspace `dev` et variables factices. Resultats :
+
+```
+module.supabase_project.supabase_project.this will be created
+  + name             = "vtc-demo-dev"
+  + region           = "eu-west-3"
+  + database_password = (sensitive value)
+
+module.cloudflare_pages.cloudflare_pages_project.this will be created
+  + name             = "vtc-demo-dev"
+
+Plan: 3 to add, 0 to change, 0 to destroy
+
+Outputs:
+  supabase_database_url = (sensitive value)
+  pages_custom_domain   = "dev.vtc-saas.com"
+```
+
+Tous les must_haves de la verification sont satisfaits :
+- 2 ressources principales creees (supabase_project + cloudflare_pages_project)
+- `database_password` et `supabase_database_url` masques en `(sensitive value)`
+- `pages_custom_domain` resolu correctement vers `dev.vtc-saas.com`
+
+**Note operateur :** Le token Cloudflare API doit faire exactement 40 caracteres pour passer la validation du provider. Un token factice court provoque une erreur de validation du provider — utiliser un token de 40 chars pour les dry-runs.
 
 ## Deviations from Plan
 
@@ -122,3 +144,5 @@ Aucun nouveau vecteur d'attaque introduit. Les mitigations T-03-01 (sensitive=tr
 - `supabase_region` present dans variables.tf
 - `TF_VAR_supabase_access_token` present dans plan.yml et apply.yml
 - Aucun secret keyword dans terraform.tfvars
+- Task 6 validee par l'operateur : `Plan: 3 to add`, secrets masques, domain resolu
+- Tous les must_haves du plan satisfaits
