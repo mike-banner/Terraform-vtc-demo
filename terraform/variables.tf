@@ -29,3 +29,34 @@ variable "github_repo_name" {
   description = "Nom du dépôt GitHub contenant le code source de l'application"
   type        = string
 }
+
+# ─── Supabase ───────────────────────────────────────────────────────────────
+
+variable "supabase_access_token" {
+  description = "Token d'accès personnel Supabase (Management API) — généré dans app.supabase.com > Account > Access Tokens"
+  type        = string
+  sensitive   = true
+}
+
+variable "supabase_organization_id" {
+  description = "ID de l'organisation Supabase cible (visible dans l'URL du dashboard)"
+  type        = string
+}
+
+variable "supabase_database_password" {
+  description = "Mot de passe administrateur de la base PostgreSQL du projet Supabase"
+  type        = string
+  sensitive   = true
+}
+
+# ─── Domaines par workspace ─────────────────────────────────────────────────
+
+variable "environment_domains" {
+  description = "Mapping workspace → domaine personnalisé (laisser vide pour désactiver le domaine custom)"
+  type        = map(string)
+  default = {
+    dev        = "dev.vtc-saas.com"
+    staging    = "staging.vtc-saas.com"
+    production = "app.vtc-saas.com"
+  }
+}

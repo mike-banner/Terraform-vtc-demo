@@ -12,6 +12,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.0"
     }
+    supabase = {
+      source  = "supabase/supabase"
+      version = "~> 1.0"
+    }
   }
 }
 
@@ -20,4 +24,11 @@ terraform {
 # afin de ne jamais stocker de secret en clair dans le code source.
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
+}
+
+# Configuration du provider Supabase.
+# Le token d'accès est injecté via la variable supabase_access_token (voir variables.tf)
+# pour ne jamais stocker de secret en clair dans le code source.
+provider "supabase" {
+  access_token = var.supabase_access_token
 }
