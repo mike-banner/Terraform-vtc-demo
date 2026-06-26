@@ -45,6 +45,7 @@ Phase 1 [###-------] 1/3 plans (33%)
 - TF_WORKSPACE env var pour sélection workspace (pas de workspace select explicite)
 - github.base_ref dans plan.yml (PR), github.ref_name dans apply.yml (push)
 - continue-on-error + exit 1 final pour propager l'échec plan après commentaire PR
+- GitOps Strict : Interdiction de merge en local si infrastructure Terraform. Le merge DOIT être fait sur GitHub pour déclencher le CI/CD.
 
 ## Performance Metrics
 

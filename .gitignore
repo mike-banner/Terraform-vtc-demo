@@ -41,6 +41,7 @@ test/
 .cursor/
 .claude/
 .impeccable/
+graphify-out/
 repomix-output.md
 repomix.config.json
 CLAUDE.md
