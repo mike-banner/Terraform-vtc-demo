@@ -69,6 +69,19 @@ jobs:
         run: terraform validate -no-color
         working-directory: terraform
 
+      # TFLint : Analyse statique pour détecter les erreurs cloud-specific et mauvaises pratiques
+      - uses: terraform-linters/setup-tflint@v4
+        name: Setup TFLint
+      - name: Run TFLint
+        run: tflint -f compact
+        working-directory: terraform
+
+      # TFSec : Scan de sécurité statique pour bloquer les vulnérabilités (ex: S3 public)
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform
+
       # Plan avec continue-on-error:true pour que le step de commentaire s'exécute
       # même en cas d'échec. L'échec est propagé par le step "Fail if plan failed" ci-dessous.
       - name: Terraform Plan
