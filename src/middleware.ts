@@ -6,10 +6,14 @@ export const onRequest = defineMiddleware(async ({ cookies, request, redirect, l
   const url = new URL(request.url);
   const path = url.pathname;
 
+  const runtimeEnv = (locals as any)?.runtime?.env || {};
+  const supabaseUrl = runtimeEnv.PUBLIC_SUPABASE_URL ?? import.meta.env.PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = runtimeEnv.PUBLIC_SUPABASE_ANON_KEY ?? import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
   // Initialisation Supabase (SSR)
   const supabase = createServerClient(
-    import.meta.env.PUBLIC_SUPABASE_URL,
-    import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll: () =>
