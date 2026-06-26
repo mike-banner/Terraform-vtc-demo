@@ -33,6 +33,9 @@ jobs:
       TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
       TF_VAR_github_owner: ${{ secrets.GH_OWNER }}
       TF_VAR_github_repo_name: ${{ secrets.GH_REPO_NAME }}
+      TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORG_ID }}
+      TF_VAR_supabase_database_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
 
       # Credentials S3 pour le backend Cloudflare R2 (API S3-compatible).
       AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
@@ -68,6 +71,19 @@ jobs:
         id: validate
         run: terraform validate -no-color
         working-directory: terraform
+
+      # TFLint : Analyse statique pour détecter les erreurs cloud-specific et mauvaises pratiques
+      - uses: terraform-linters/setup-tflint@v4
+        name: Setup TFLint
+      - name: Run TFLint
+        run: tflint -f compact
+        working-directory: terraform
+
+      # TFSec : Scan de sécurité statique pour bloquer les vulnérabilités
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform
 
       # Plan avec continue-on-error:true pour que le step de commentaire s'exécute
       # même en cas d'échec. L'échec est propagé par le step "Fail if plan failed" ci-dessous.

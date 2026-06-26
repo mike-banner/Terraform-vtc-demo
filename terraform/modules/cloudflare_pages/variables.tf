@@ -34,3 +34,10 @@ variable "custom_domain" {
   type        = string
   default     = ""
 }
+
+variable "env_vars" {
+  description = "Variables d'environnement injectées dans les déploiements Pages (toutes traitées comme secrets)"
+  type        = map(string)
+  sensitive   = true
+  default     = {}
+}

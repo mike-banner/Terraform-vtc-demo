@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-PLAN-SUMMARY.md
-last_updated: "2026-06-25T21:36:30.872Z"
+stopped_at: Checkpoint 02-01 task 4 — plan.yml + apply.yml + README créés, en attente validation humaine
+last_updated: "2026-06-26T10:40:00.231Z"
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 1
+  total_plans: 3
   completed_plans: 2
   percent: 33
 ---
@@ -17,12 +17,12 @@ progress:
 
 ## Current Position
 
-Phase: 02 (CI/CD GitOps) — EXECUTING
-Plan: 1 of 1
+Phase: 03 (Supabase Integration) — EXECUTING
+Plan: 1 of 2
 
 - **Phase:** 01 - Terraform Foundation & Workspaces
 - **Plan:** PLAN (completed)
-- **Status:** Executing Phase 02
+- **Status:** Executing Phase 03
 
 ## Progress
 
