@@ -17,3 +17,19 @@ output "active_workspace" {
   description = "Workspace Terraform actif au moment de l'apply (dev / staging / production)"
   value       = terraform.workspace
 }
+
+output "supabase_project_ref" {
+  description = "Référence du projet Supabase créé (identifiant unique)"
+  value       = module.supabase_project.project_ref
+}
+
+output "supabase_api_url" {
+  description = "URL de l'API Supabase (NEXT_PUBLIC_SUPABASE_URL)"
+  value       = module.supabase_project.api_url
+}
+
+output "supabase_database_url" {
+  description = "URL de connexion PostgreSQL directe — sensible, ne pas exposer publiquement"
+  value       = module.supabase_project.database_url
+  sensitive   = true
+}

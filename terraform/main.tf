@@ -1,10 +1,27 @@
 # main.tf
-# Point d'entrée du module racine. Appelle le module cloudflare_pages
-# en lui passant un nom de projet suffixé par le workspace actif.
+# Point d'entrée du module racine. Crée un projet Supabase et un projet
+# Cloudflare Pages pour le workspace actif, puis injecte l'URL de la base
+# de données dans les variables d'environnement de Cloudflare.
 #
-# Exemple :
-#   terraform workspace select dev  → project_name = "vtc-demo-dev"
-#   terraform workspace select production → project_name = "vtc-demo-production"
+# Ordre de dépendance garanti par Terraform :
+#   supabase_project → (database_url) → cloudflare_pages (env_vars)
+#
+# Exemples :
+#   terraform workspace select dev        → vtc-demo-dev (Supabase + CF Pages)
+#   terraform workspace select staging    → vtc-demo-staging
+#   terraform workspace select production → vtc-demo-production
+
+# ─── Module Supabase ─────────────────────────────────────────────────────────
+
+module "supabase_project" {
+  source = "./modules/supabase_project"
+
+  project_name      = "${var.project_name}-${terraform.workspace}"
+  organization_id   = var.supabase_organization_id
+  database_password = var.supabase_database_password
+}
+
+# ─── Module Cloudflare Pages ─────────────────────────────────────────────────
 
 module "cloudflare_pages" {
   source = "./modules/cloudflare_pages"
@@ -13,6 +30,17 @@ module "cloudflare_pages" {
   project_name     = "${var.project_name}-${terraform.workspace}"
   github_owner     = var.github_owner
   github_repo_name = var.github_repo_name
-}
 
-# Test CI
+  # Domaine personnalisé selon le workspace (lookup retourne "" si clé absente → pas de domaine)
+  custom_domain = lookup(var.environment_domains, terraform.workspace, "")
+
+  # Lien magique : l'URL Supabase est injectée automatiquement dans Cloudflare Pages.
+  # Terraform garantit que supabase_project est créé AVANT cloudflare_pages.
+  env_vars = {
+    DATABASE_URL        = module.supabase_project.database_url
+    SUPABASE_URL        = module.supabase_project.api_url
+    NEXT_PUBLIC_SUPABASE_URL = module.supabase_project.api_url
+  }
+
+  depends_on = [module.supabase_project]
+}
