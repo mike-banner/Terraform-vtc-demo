@@ -6,7 +6,7 @@
 output "database_url" {
   description = "URL de connexion PostgreSQL directe (contient le mot de passe)"
   # Format standard Supabase : postgresql://postgres:[password]@db.[ref].supabase.co:5432/postgres
-  value     = "postgresql://postgres:${var.database_password}@db.${supabase_project.this.id}.supabase.co:5432/postgres"
+  value     = "postgresql://postgres:${urlencode(var.database_password)}@db.${supabase_project.this.id}.supabase.co:5432/postgres"
   sensitive = true
 }
 

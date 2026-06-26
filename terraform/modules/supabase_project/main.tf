@@ -20,4 +20,8 @@ resource "supabase_project" "this" {
   organization_id   = var.organization_id
   database_password = var.database_password
   region            = var.region
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

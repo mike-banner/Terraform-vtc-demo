@@ -42,6 +42,4 @@ module "cloudflare_pages" {
     SUPABASE_URL        = module.supabase_project.api_url
     NEXT_PUBLIC_SUPABASE_URL = module.supabase_project.api_url
   }
-
-  depends_on = [module.supabase_project]
 }

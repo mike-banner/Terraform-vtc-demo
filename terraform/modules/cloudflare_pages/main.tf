@@ -52,12 +52,18 @@ resource "cloudflare_pages_project" "this" {
   deployment_configs = length(var.env_vars) > 0 ? {
     production = {
       environment_variables = {
-        for k, v in var.env_vars : k => { value = v, type = "secret_text" }
+        for k, v in var.env_vars : k => {
+          value = v
+          type  = startswith(k, "NEXT_PUBLIC_") ? "plain_text" : "secret_text"
+        }
       }
     }
     preview = {
       environment_variables = {
-        for k, v in var.env_vars : k => { value = v, type = "secret_text" }
+        for k, v in var.env_vars : k => {
+          value = v
+          type  = startswith(k, "NEXT_PUBLIC_") ? "plain_text" : "secret_text"
+        }
       }
     }
   } : null
