@@ -11,12 +11,16 @@ export const onRequest = defineMiddleware(async ({ cookies, request, redirect, l
   const supabaseAnonKey = runtimeEnv.PUBLIC_SUPABASE_ANON_KEY ?? import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
+    const rawUrl = runtimeEnv.PUBLIC_SUPABASE_URL;
+    const rawKey = runtimeEnv.PUBLIC_SUPABASE_ANON_KEY;
     return new Response(
-      `[DEBUG] Missing Supabase credentials. \n` +
-      `URL is set: ${!!supabaseUrl}\n` +
-      `Anon Key is set: ${!!supabaseAnonKey}\n` +
+      `[DEBUG] Missing Supabase credentials.\n` +
+      `URL value: "${rawUrl}"\n` +
+      `URL type: ${typeof rawUrl}\n` +
+      `Anon Key type: ${typeof rawKey}\n` +
+      `Anon Key length: ${typeof rawKey === 'string' ? rawKey.length : 'N/A'}\n` +
       `Keys available in runtimeEnv: ${Object.keys(runtimeEnv).join(', ')}\n` +
-      `Has runtime object: ${!!(locals as any)?.runtime}`, 
+      `Has runtime object: ${!!(locals as any)?.runtime}`,
       { status: 500 }
     );
   }
