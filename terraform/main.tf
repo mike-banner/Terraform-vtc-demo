@@ -38,8 +38,12 @@ module "cloudflare_pages" {
   # Lien magique : l'URL Supabase est injectée automatiquement dans Cloudflare Pages.
   # Terraform garantit que supabase_project est créé AVANT cloudflare_pages.
   env_vars = {
-    DATABASE_URL        = module.supabase_project.database_url
-    SUPABASE_URL        = module.supabase_project.api_url
-    NEXT_PUBLIC_SUPABASE_URL = module.supabase_project.api_url
+    DATABASE_URL                  = module.supabase_project.database_url
+    SUPABASE_URL                  = module.supabase_project.api_url
+    NEXT_PUBLIC_SUPABASE_URL      = module.supabase_project.api_url
+    PUBLIC_SUPABASE_URL           = module.supabase_project.api_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY = module.supabase_project.anon_key
+    PUBLIC_SUPABASE_ANON_KEY      = module.supabase_project.anon_key
+    SUPABASE_SERVICE_ROLE_KEY     = module.supabase_project.service_role_key
   }
 }

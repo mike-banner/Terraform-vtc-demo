@@ -19,3 +19,15 @@ output "project_ref" {
   description = "Référence unique du projet Supabase (ex: abcdefghijklmnop)"
   value       = supabase_project.this.id
 }
+
+output "anon_key" {
+  description = "Clé publique anonyme Supabase"
+  value       = supabase_project.this.anon_key
+  sensitive   = true
+}
+
+output "service_role_key" {
+  description = "Clé privée Service Role Supabase"
+  value       = supabase_project.this.service_key
+  sensitive   = true
+}

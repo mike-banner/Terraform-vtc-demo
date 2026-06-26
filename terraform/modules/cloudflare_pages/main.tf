@@ -54,7 +54,7 @@ resource "cloudflare_pages_project" "this" {
       environment_variables = {
         for k, v in var.env_vars : k => {
           value = v
-          type  = startswith(k, "NEXT_PUBLIC_") ? "plain_text" : "secret_text"
+          type  = startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_") ? "plain_text" : "secret_text"
         }
       }
     }
@@ -62,7 +62,7 @@ resource "cloudflare_pages_project" "this" {
       environment_variables = {
         for k, v in var.env_vars : k => {
           value = v
-          type  = startswith(k, "NEXT_PUBLIC_") ? "plain_text" : "secret_text"
+          type  = startswith(k, "NEXT_PUBLIC_") || startswith(k, "PUBLIC_") ? "plain_text" : "secret_text"
         }
       }
     }
