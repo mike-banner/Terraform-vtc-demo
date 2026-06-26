@@ -49,6 +49,14 @@ variable "supabase_database_password" {
   sensitive   = true
 }
 
+# ─── Région Supabase ────────────────────────────────────────────────────────
+
+variable "supabase_region" {
+  description = "Région Supabase des projets créés (ex: eu-west-3 pour Paris)"
+  type        = string
+  default     = "eu-west-3"
+}
+
 # ─── Domaines par workspace ─────────────────────────────────────────────────
 
 variable "environment_domains" {

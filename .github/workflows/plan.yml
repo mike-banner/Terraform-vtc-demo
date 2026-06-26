@@ -33,6 +33,9 @@ jobs:
       TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
       TF_VAR_github_owner: ${{ secrets.GH_OWNER }}
       TF_VAR_github_repo_name: ${{ secrets.GH_REPO_NAME }}
+      TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORG_ID }}
+      TF_VAR_supabase_database_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
 
       # Credentials S3 pour le backend Cloudflare R2 (API S3-compatible).
       AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}

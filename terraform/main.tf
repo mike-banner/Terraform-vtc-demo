@@ -19,6 +19,7 @@ module "supabase_project" {
   project_name      = "${var.project_name}-${terraform.workspace}"
   organization_id   = var.supabase_organization_id
   database_password = var.supabase_database_password
+  region            = var.supabase_region
 }
 
 # ─── Module Cloudflare Pages ─────────────────────────────────────────────────
