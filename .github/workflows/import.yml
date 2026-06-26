@@ -1,0 +1,45 @@
+name: Terraform Import (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_ref:
+        description: 'Supabase Project Reference ID (ex: kpnkhmtxzigxtfnkmzru)'
+        required: true
+      workspace:
+        description: 'Workspace cible (ex: production, staging, dev)'
+        required: true
+        default: 'production'
+
+permissions:
+  contents: read
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    env:
+      TF_WORKSPACE: ${{ github.event.inputs.workspace }}
+      TF_VAR_cloudflare_api_token: ${{ secrets.CF_API_TOKEN }}
+      TF_VAR_cloudflare_account_id: ${{ secrets.CF_ACCOUNT_ID }}
+      TF_VAR_github_owner: ${{ secrets.GH_OWNER }}
+      TF_VAR_github_repo_name: ${{ secrets.GH_REPO_NAME }}
+      TF_VAR_supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      TF_VAR_supabase_organization_id: ${{ secrets.SUPABASE_ORG_ID }}
+      TF_VAR_supabase_database_password: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.CF_R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.CF_R2_SECRET_ACCESS_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "~> 1.5"
+
+      - name: Terraform Init
+        run: terraform init -input=false -backend-config="endpoint=${{ secrets.CF_R2_ENDPOINT }}"
+        working-directory: terraform
+
+      - name: Terraform Import
+        run: terraform import -input=false module.supabase_project.supabase_project.this ${{ github.event.inputs.project_ref }}
+        working-directory: terraform
