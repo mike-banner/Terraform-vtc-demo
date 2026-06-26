@@ -45,5 +45,6 @@ module "cloudflare_pages" {
     NEXT_PUBLIC_SUPABASE_ANON_KEY = var.supabase_anon_key
     PUBLIC_SUPABASE_ANON_KEY      = var.supabase_anon_key
     SUPABASE_SERVICE_ROLE_KEY     = var.supabase_service_role_key
+    # Dummy comment to trigger Terraform Plan
   }
 }
