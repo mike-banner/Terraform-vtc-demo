@@ -35,16 +35,13 @@ module "cloudflare_pages" {
   # Domaine personnalisé selon le workspace (lookup retourne "" si clé absente → pas de domaine)
   custom_domain = lookup(var.environment_domains, terraform.workspace, "")
 
-  # Lien magique : l'URL Supabase est injectée automatiquement dans Cloudflare Pages.
-  # Terraform garantit que supabase_project est créé AVANT cloudflare_pages.
   env_vars = {
     DATABASE_URL                  = module.supabase_project.database_url
-    SUPABASE_URL                  = module.supabase_project.api_url
-    NEXT_PUBLIC_SUPABASE_URL      = module.supabase_project.api_url
-    PUBLIC_SUPABASE_URL           = module.supabase_project.api_url
+    SUPABASE_URL                  = var.supabase_url
+    NEXT_PUBLIC_SUPABASE_URL      = var.supabase_url
+    PUBLIC_SUPABASE_URL           = var.supabase_url
     NEXT_PUBLIC_SUPABASE_ANON_KEY = var.supabase_anon_key
     PUBLIC_SUPABASE_ANON_KEY      = var.supabase_anon_key
     SUPABASE_SERVICE_ROLE_KEY     = var.supabase_service_role_key
-    # Dummy comment to trigger Terraform Plan
   }
 }

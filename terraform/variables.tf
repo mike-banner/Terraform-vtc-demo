@@ -49,6 +49,11 @@ variable "supabase_database_password" {
   sensitive   = true
 }
 
+variable "supabase_url" {
+  description = "URL de l'API Supabase (ex: https://xxxx.supabase.co) — visible dans Project Settings > API"
+  type        = string
+}
+
 variable "supabase_anon_key" {
   description = "Clé anonyme Supabase (gérée via CI)"
   type        = string
